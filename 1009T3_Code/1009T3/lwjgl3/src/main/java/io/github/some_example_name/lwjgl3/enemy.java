@@ -1,0 +1,98 @@
+package io.github.some_example_name.lwjgl3;
+
+import abstractengine.entity;
+import abstractengine.interfaces.imovable;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Gdx;
+
+public class enemy extends entity implements imovable {
+    private Texture texture;
+    private static final float FALL_SPEED = 150; // Constant for controlled downward movement
+    private static final float HORIZONTAL_SPEED = 150; //Controlled horizontal movement
+    
+    public enum MovementType {
+    	VERTICAL,
+    	HORIZONTAL
+    }
+    
+    private MovementType movementType;
+    private boolean movingRight = true; 
+    private float horizontalSpeed = HORIZONTAL_SPEED;
+    private float verticalSpeed = FALL_SPEED;
+    
+    
+    public enemy(int id, String textureFile, float x, float y, MovementType movementType) {
+        super(id, "enemy", x, y, 50, 50); // Use parent constructor
+        this.texture = new Texture(Gdx.files.internal(textureFile));
+        this.movementType = movementType;
+    }
+    
+    //Backwards compatiblity for vertical movements
+    public enemy(int id,String textureFile, float x, float y) {
+    	this(id, textureFile, x, y, MovementType.VERTICAL);
+    }
+    
+    @Override
+    public void update() {
+        // You may choose to call updateMovement here or leave it empty if handled elsewhere.
+    }
+
+    @Override
+    public void updateMovement(float deltaTime) {
+    	switch (movementType) {
+    	case VERTICAL:
+    		setY(getY() - verticalSpeed * deltaTime);
+    		break;
+    	
+    	case HORIZONTAL:
+    		if (movingRight) {
+    			setX(getX() + horizontalSpeed * deltaTime);
+    		}
+    		else {
+    			setX(getX() - horizontalSpeed * deltaTime);
+    		}
+    		break;
+    	}
+    }
+    
+    // Method to set movement direction for horizontal enemies
+    public void setMovingRight(boolean movingRight) {
+        this.movingRight = movingRight;
+    }
+    
+    // Method to get the movement type
+    public MovementType getMovementType() {
+        return movementType;
+    }
+    
+    // Method to set horizontal movement speed
+    public void setHorizontalSpeed(float speed) {
+        this.horizontalSpeed = speed;
+    }
+    
+    // Method to get horizontal movement speed
+    public float getHorizontalSpeed() {
+        return horizontalSpeed;
+    }
+    
+    // Method to set vertical movement speed
+    public void setVerticalSpeed(float speed) {
+        this.verticalSpeed = speed;
+    }
+    
+    // Method to get vertical movement speed
+    public float getVerticalSpeed() {
+        return verticalSpeed;
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        batch.draw(texture, getX(), getY(), getWidth(), getHeight());
+    }
+
+    @Override
+    public void dispose() {
+        texture.dispose();
+    }
+}
